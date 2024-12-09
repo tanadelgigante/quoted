@@ -1,0 +1,8 @@
+services:
+  qotd-server:
+    build: .
+    ports:
+      - "17:17"
+    volumes:
+      # Monta il database SQLite per persistenza
+      - ./quotes.db:/root/quotes.db
