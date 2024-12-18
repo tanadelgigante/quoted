@@ -1,10 +1,12 @@
 # Fase di build
-FROM golang:1.21 AS build
+FROM golang:1.21-alpine AS build
 
 WORKDIR /app
 
 # Imposta le variabili di ambiente per la compilazione cross-platform
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+
+RUN apk --no-cache add file
 
 # Copia il file go.mod e genera il file go.sum
 COPY go.mod ./
