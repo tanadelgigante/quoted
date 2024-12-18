@@ -1,17 +1,17 @@
 # Fase di build
 FROM golang:1.21-alpine AS build
 
-# Crea una directory di lavoro
 WORKDIR /app
 
-# Copia il modulo Go e i file di dipendenze
-COPY go.mod go.sum ./
-
-# Scarica le dipendenze del modulo
-RUN go mod download
+# Copia solo il file go.mod e genera go.sum
+COPY go.mod ./
+RUN go mod tidy
 
 # Copia il resto del codice dell'applicazione
 COPY . .
+
+# Scarica le dipendenze del modulo
+RUN go mod download
 
 # Costruisce l'applicazione Go
 RUN go build -o qotd-server .
@@ -22,7 +22,6 @@ FROM alpine:latest
 # Installazione delle dipendenze necessarie
 RUN apk --no-cache add sqlite
 
-# Crea una directory di lavoro
 WORKDIR /app
 
 # Copia l'eseguibile dall'immagine di build
