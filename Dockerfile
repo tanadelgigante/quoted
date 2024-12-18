@@ -4,10 +4,7 @@ FROM golang:1.21-alpine AS build
 WORKDIR /app
 
 # Copia il file go.mod
-COPY go.mod ./
-
-# Esegui go mod tidy per generare il file go.sum
-RUN go mod tidy
+COPY go.* ./
 
 # Copia il resto del codice dell'applicazione
 COPY . .
