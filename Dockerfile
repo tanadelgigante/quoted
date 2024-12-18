@@ -3,8 +3,8 @@ FROM golang:1.21-alpine AS build
 
 WORKDIR /app
 
-# Copia il file go.mod
-COPY go.* ./
+# Copia il file go.mod e genera il file go.sum
+COPY go.mod ./
 
 # Copia il resto del codice dell'applicazione
 COPY . .
@@ -25,6 +25,9 @@ WORKDIR /app
 
 # Copia l'eseguibile dall'immagine di build
 COPY --from=build /app/qotd-server /app/qotd-server
+
+# Imposta i permessi di esecuzione sull'eseguibile
+RUN chmod +x /app/qotd-server
 
 # Copia il file del database se esiste o crea una nuova directory per il database
 COPY --from=build /app/quotes.db /app/quotes.db
