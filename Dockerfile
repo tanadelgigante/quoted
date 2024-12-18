@@ -3,6 +3,9 @@ FROM golang:1.21-alpine AS build
 
 WORKDIR /app
 
+# Imposta la variabile di ambiente per la compilazione cross-platform
+ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+
 # Copia il file go.mod e genera il file go.sum
 COPY go.mod ./
 
