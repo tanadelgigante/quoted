@@ -25,7 +25,8 @@ RUN go mod download
 
 # Imposta le variabili per la compilazione cross-platform
 ENV CGO_ENABLED=1 \
-    GOOS=linux
+    GOOS=linux\
+    CGO_CFLAGS="-D_LARGEFILE64_SOURCE"
 
 # Costruisce l'applicazione con flag specifici per l'architettura
 RUN --mount=type=cache,target=/root/.cache/go-build \
@@ -44,7 +45,8 @@ WORKDIR /root/
 # Installa le dipendenze di runtime
 RUN apk add --no-cache \
     sqlite
-
+RUN apk update && apk upgrade sqlite-dev
+	
 # Copia il binario dal builder
 COPY --from=builder /app/qotd-server .
 
