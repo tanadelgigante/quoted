@@ -1,60 +1,38 @@
-FROM golang:1.21-alpine AS builder
+# Fase di build
+FROM golang:1.21-alpine AS build
 
-# Imposta esplicitamente l'architettura di build
-ARG TARGETARCH
-
+# Crea una directory di lavoro
 WORKDIR /app
 
-# Installa le dipendenze di sistema necessarie per la compilazione
-RUN apk add --no-cache \
-    gcc \
-    musl-dev \
-    sqlite-dev \
-    linux-headers \
-    build-base
+# Copia il modulo Go e i file di dipendenze
+COPY go.mod go.sum ./
 
-# Copia i file del progetto
-COPY go.mod go.sum* ./
-COPY *.go ./
-
-# Genera go.sum se non esiste
-RUN if [ ! -f go.sum ]; then go mod tidy; fi
-
-# Scarica le dipendenze
+# Scarica le dipendenze del modulo
 RUN go mod download
 
-# Imposta le variabili per la compilazione cross-platform
-ENV CGO_ENABLED=1 \
-    GOOS=linux\
-    CGO_CFLAGS="-D_LARGEFILE64_SOURCE"
+# Copia il resto del codice dell'applicazione
+COPY . .
 
-# Costruisce l'applicazione con flag specifici per l'architettura
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    GOARCH=${TARGETARCH} go build \
-    -ldflags "-s -w" \
-    -o qotd-server
+# Costruisce l'applicazione Go
+RUN go build -o qotd-server .
 
-# Imposta i permessi di esecuzione
-RUN chmod +x qotd-server
-
-# Immagine finale
+# Fase di runtime
 FROM alpine:latest
 
-WORKDIR /root/
+# Installazione delle dipendenze necessarie
+RUN apk --no-cache add sqlite
 
-# Installa le dipendenze di runtime
-RUN apk add --no-cache \
-    sqlite
-RUN apk update && apk upgrade sqlite-dev
-	
-# Copia il binario dal builder
-COPY --from=builder /app/qotd-server .
+# Crea una directory di lavoro
+WORKDIR /app
 
-# Imposta i permessi di esecuzione nel nuovo stage
-RUN chmod +x qotd-server
+# Copia l'eseguibile dall'immagine di build
+COPY --from=build /app/qotd-server /app/qotd-server
 
-# Espone la porta QOTD
+# Copia il file del database se esiste o crea una nuova directory per il database
+COPY --from=build /app/quotes.db /app/quotes.db
+
+# Esponi la porta 17 per il server QOTD
 EXPOSE 17
 
-# Comando di avvio
+# Comando di esecuzione dell'applicazione
 CMD ["./qotd-server"]
