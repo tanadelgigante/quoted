@@ -1,9 +1,8 @@
-package quoted
+package main
 
 import (
 	"database/sql"
 	"log"
-	"math/rand"
 
 	_ "github.com/mattn/go-sqlite3"
 )
