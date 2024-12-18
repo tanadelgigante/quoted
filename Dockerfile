@@ -9,14 +9,17 @@ RUN apk add --no-cache \
     sqlite-dev
 
 # Copia i file del progetto
-COPY go.mod ./
+COPY go.mod go.sum* ./
 COPY *.go ./
+
+# Genera go.sum se non esiste
+RUN if [ ! -f go.sum ]; then go mod tidy; fi
 
 # Scarica le dipendenze
 RUN go mod download
 
 # Costruisce l'applicazione
-RUN CGO_ENABLED=1 GOOS=linux go build -o quoted
+RUN CGO_ENABLED=1 GOOS=linux go build -o qotd-server
 
 # Immagine finale più leggera
 FROM alpine:latest
