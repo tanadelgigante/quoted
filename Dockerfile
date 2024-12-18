@@ -26,10 +26,13 @@ ENV CGO_ENABLED=1 \
     GOOS=linux \
     CGO_CFLAGS="-D_LARGEFILE64_SOURCE"
 
-# Costruisce l'applicazione con flag aggiuntivi
+# Costruisce l'applicazione
 RUN go build \
     -ldflags "-s -w" \
     -o qotd-server
+
+# Imposta i permessi di esecuzione
+RUN chmod +x qotd-server
 
 # Immagine finale
 FROM alpine:latest
@@ -42,6 +45,9 @@ RUN apk add --no-cache \
 
 # Copia il binario dal builder
 COPY --from=builder /app/qotd-server .
+
+# Imposta i permessi di esecuzione nel nuovo stage
+RUN chmod +x qotd-server
 
 # Espone la porta QOTD
 EXPOSE 17
