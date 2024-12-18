@@ -2,11 +2,14 @@ FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-# Installa le dipendenze di sistema
+# Installa le dipendenze di sistema necessarie per la compilazione
 RUN apk add --no-cache \
     gcc \
     musl-dev \
-    sqlite-dev
+    sqlite-dev \
+    # Aggiungi questi pacchetti per risolvere problemi di compilazione
+    linux-headers \
+    build-base
 
 # Copia i file del progetto
 COPY go.mod go.sum* ./
@@ -18,10 +21,17 @@ RUN if [ ! -f go.sum ]; then go mod tidy; fi
 # Scarica le dipendenze
 RUN go mod download
 
-# Costruisce l'applicazione
-RUN CGO_ENABLED=1 GOOS=linux go build -o qotd-server
+# Imposta le variabili per la compilazione cross-platform
+ENV CGO_ENABLED=1 \
+    GOOS=linux \
+    CGO_CFLAGS="-D_LARGEFILE64_SOURCE"
 
-# Immagine finale più leggera
+# Costruisce l'applicazione con flag aggiuntivi
+RUN go build \
+    -ldflags "-s -w" \
+    -o qotd-server
+
+# Immagine finale
 FROM alpine:latest
 
 WORKDIR /root/
@@ -31,10 +41,10 @@ RUN apk add --no-cache \
     sqlite
 
 # Copia il binario dal builder
-COPY --from=builder /app/quoted .
+COPY --from=builder /app/qotd-server .
 
 # Espone la porta QOTD
 EXPOSE 17
 
 # Comando di avvio
-CMD ["./quoted"]
+CMD ["./qotd-server"]

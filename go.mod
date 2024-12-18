@@ -1,4 +1,4 @@
-module quoted
+module qotd-server
 
 go 1.21
 
