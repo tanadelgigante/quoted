@@ -1,5 +1,8 @@
 FROM golang:1.21-alpine AS builder
 
+# Imposta esplicitamente l'architettura di build
+ARG TARGETARCH
+
 WORKDIR /app
 
 # Installa le dipendenze di sistema necessarie per la compilazione
@@ -7,7 +10,6 @@ RUN apk add --no-cache \
     gcc \
     musl-dev \
     sqlite-dev \
-    # Aggiungi questi pacchetti per risolvere problemi di compilazione
     linux-headers \
     build-base
 
@@ -23,11 +25,11 @@ RUN go mod download
 
 # Imposta le variabili per la compilazione cross-platform
 ENV CGO_ENABLED=1 \
-    GOOS=linux \
-    CGO_CFLAGS="-D_LARGEFILE64_SOURCE"
+    GOOS=linux
 
-# Costruisce l'applicazione
-RUN go build \
+# Costruisce l'applicazione con flag specifici per l'architettura
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    GOARCH=${TARGETARCH} go build \
     -ldflags "-s -w" \
     -o qotd-server
 
