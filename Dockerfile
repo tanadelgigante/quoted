@@ -1,5 +1,5 @@
 # Utilizza una singola fase di build e runtime
-FROM golang:1.21-alpine
+FROM golang:1.23.4-alpine
 
 WORKDIR /app
 
