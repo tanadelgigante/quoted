@@ -1,7 +1,7 @@
 package main
 
 import (
-	"quotd"
+	"qotd"
 )
 
 func main() {
