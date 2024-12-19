@@ -1,4 +1,4 @@
-package quoted
+package quoted 
 
 import (
 	"database/sql"

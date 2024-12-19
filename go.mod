@@ -1,6 +1,6 @@
 module qotd-server
 
-go 1.21
+go 1.23.4
 
 require modernc.org/sqlite v1.13.0
 
