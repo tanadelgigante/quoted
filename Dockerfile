@@ -9,7 +9,6 @@ ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 # Copia il file go.mod e genera il file go.sum
 COPY go.mod ./
 COPY go.sum ./
-RUN go mod tidy
 
 # Copia il resto del codice dell'applicazione
 COPY . .
