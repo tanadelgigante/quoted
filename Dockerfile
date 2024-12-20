@@ -3,18 +3,15 @@ FROM golang:1.23.4 AS build
 
 WORKDIR /app
 
-# Imposta le variabili di ambiente per la compilazione cross-platform
-ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-
-# Copia il file go.mod e genera il file go.sum
-COPY go.mod ./
-COPY go.sum ./
-
-# Copia il resto del codice dell'applicazione
-COPY . .
+# Copia i file go.mod e go.sum
+COPY go.mod .
+COPY go.sum .
 
 # Scarica le dipendenze del modulo
 RUN go mod download
+
+# Copia il resto del codice dell'applicazione
+COPY . .
 
 # Costruisce l'applicazione Go
 RUN go build -o qotd-server .
