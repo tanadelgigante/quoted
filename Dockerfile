@@ -17,10 +17,7 @@ COPY . .
 RUN go build -o qotd-server .
 
 # Fase di runtime
-FROM alpine:latest
-
-# Installazione delle dipendenze necessarie
-RUN apk --no-cache add sqlite
+FROM golang:1.23.4-alpine
 
 WORKDIR /app
 
