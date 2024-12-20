@@ -13,11 +13,11 @@ RUN go mod download
 # Copia il resto del codice dell'applicazione
 COPY . .
 
-# Costruisce l'applicazione Go
-RUN go build -o qotd-server .
+# Costruisce l'applicazione Go staticamente
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o qotd-server .
 
 # Fase di runtime
-FROM golang:1.23.4-alpine
+FROM alpine:latest
 
 WORKDIR /app
 
