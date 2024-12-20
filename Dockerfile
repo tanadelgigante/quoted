@@ -37,4 +37,4 @@ COPY --from=build /app/quotes.db /app/quotes.db
 EXPOSE 17
 
 # Comando di esecuzione dell'applicazione
-CMD ["./qotd-server"] 
+CMD ["./qotd-server"]
