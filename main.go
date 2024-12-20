@@ -1,7 +1,7 @@
 package main
 
 import (
-	"qotd-server\qotd"
+	"qotd-server/qotd"
 )
 
 func main() {
