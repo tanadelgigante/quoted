@@ -26,7 +26,7 @@ func NewQOTDServer(port int, db *sql.DB) *QOTDServer {
 
 func (s *QOTDServer) Start() {
 	log.Printf("Server QOTD in ascolto su :%d", 17)
-	
+
 	for {
 		// Accetta connessioni in entrata
 		conn, err := s.listener.Accept()
@@ -53,7 +53,7 @@ func (s *QOTDServer) handleConnection(conn net.Conn) {
 
 	// Formatta la citazione secondo lo standard QOTD
 	quoteMessage := fmt.Sprintf("\"%s\"\n\t- %s\r\n", quote.Text, quote.Author)
-	
+
 	// Invia la citazione
 	_, err = conn.Write([]byte(quoteMessage))
 	if err != nil {
