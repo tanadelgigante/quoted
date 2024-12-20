@@ -1,7 +1,12 @@
 package main
 
 import (
-	"qotd-server/qotd"
+    "log"
+    "os"
+    "os/signal"
+    "syscall"
+
+    "qotd-server/qotd" // Importa il package quoted correttamente
 )
 
 func main() {
@@ -22,5 +27,6 @@ func main() {
     }()
 
     // Avvia il server
+    log.Println("Server QOTD avviato")
     server.Start()
 }
