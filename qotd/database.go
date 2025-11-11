@@ -8,10 +8,8 @@ import (
 )
 
 type Quote struct {
-	ID       int
-	Text     string
-	Author   string
-	Category string
+	Text   string
+	Author string
 }
 
 func InitDatabase() *sql.DB {
@@ -21,13 +19,12 @@ func InitDatabase() *sql.DB {
 		log.Fatalf("Errore apertura database: %v", err)
 	}
 
-	// Crea la tabella se non esiste
+	// Crea la tabella se non esiste (solo id, text, author)
 	_, err = db.Exec(`
         CREATE TABLE IF NOT EXISTS quotes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             text TEXT NOT NULL,
-            author TEXT NOT NULL,
-            category TEXT
+            author TEXT NOT NULL
         )
     `)
 	if err != nil {
@@ -43,9 +40,9 @@ func InitDatabase() *sql.DB {
 
 	if count == 0 {
 		quotes := []Quote{
-			{Text: "La vita è quello che ti accade mentre sei intento a fare altri piani.", Author: "John Lennon", Category: "Filosofia"},
-			{Text: "Non importa quanto vai piano, l'importante è non fermarsi.", Author: "Confucio", Category: "Motivazione"},
-			{Text: "Il successo è la somma di piccoli sforzi, ripetuti giorno dopo giorno.", Author: "Robert Collier", Category: "Successo"},
+			{Text: "La vita è quello che ti accade mentre sei intento a fare altri piani.", Author: "John Lennon"},
+			{Text: "Non importa quanto vai piano, l'importante è non fermarsi.", Author: "Confucio"},
+			{Text: "Il successo è la somma di piccoli sforzi, ripetuti giorno dopo giorno.", Author: "Robert Collier"},
 		}
 
 		tx, err := db.Begin()
@@ -53,9 +50,9 @@ func InitDatabase() *sql.DB {
 			log.Fatalf("Errore inizio transazione: %v", err)
 		}
 
-		for _, quote := range quotes {
-			_, err := tx.Exec("INSERT INTO quotes (text, author, category) VALUES (?, ?, ?)",
-				quote.Text, quote.Author, quote.Category)
+		for _, q := range quotes {
+			_, err := tx.Exec("INSERT INTO quotes (text, author) VALUES (?, ?)",
+				q.Text, q.Author)
 			if err != nil {
 				tx.Rollback()
 				log.Fatalf("Errore inserimento citazione: %v", err)
@@ -74,15 +71,15 @@ func InitDatabase() *sql.DB {
 func getRandomQuote(db *sql.DB) (Quote, error) {
 	var quote Quote
 
-	// Query per selezionare una citazione casuale
+	// Query per selezionare una citazione casuale (solo text e author)
 	row := db.QueryRow(`
-        SELECT id, text, author, category 
-        FROM quotes 
-        ORDER BY RANDOM() 
+        SELECT text, author
+        FROM quotes
+        ORDER BY RANDOM()
         LIMIT 1
     `)
 
-	err := row.Scan(&quote.ID, &quote.Text, &quote.Author, &quote.Category)
+	err := row.Scan(&quote.Text, &quote.Author)
 	if err != nil {
 		return Quote{}, err
 	}
