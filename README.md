@@ -105,6 +105,34 @@
     "La citazione del giorno è..."
     ```
 
+#### Quotes DB
+
+- **Inizializzazione database**:
+     ```sql
+    BEGIN TRANSACTION;
+
+    CREATE TABLE IF NOT EXISTS quotes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT NOT NULL,
+    author TEXT,
+    created_at DATETIME NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_quotes_author ON quotes(author);
+
+    -- Esempi
+    INSERT INTO quotes(text, author) VALUES ('Fletto i muscoli e sono nel vuoto', 'Rat-Man');
+
+    COMMIT;
+     ```
+- **Template per le insert**:
+    ```sql
+    -- Template per inserire una citazione (usare binding :text e :author dal client oppure sostituire i valori)
+    INSERT INTO quotes(text, author, created_at) VALUES (:text, :author, datetime('now'));
+    -- Esempio CLI:
+    -- sqlite3 quotes.db "INSERT INTO quotes(text,author) VALUES('Una nuova citazione','Autore');"
+    ```
+
 ### Debugging
 
 - Usa i log dell'applicazione per monitorare le connessioni e le risposte del server. Cerca messaggi `[INFO]` e `[DEBUG]` nell'output della console.
